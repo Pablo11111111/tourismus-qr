@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Touristen Infos – Lokale Gewerbe</title>
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  background:#f5f5f5;
+}
+header{
+  background:#2f3e46;
+  color:white;
+  text-align:center;
+  padding:20px;
+}
+.container{
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+.card{
+  background:white;
+  padding:20px;
+  margin-bottom:20px;
+  border-radius:12px;
+  box-shadow:0 3px 8px rgba(0,0,0,0.1);
+  text-align:center;
+}
+.card img{
+  width:150px;
+  margin-top:10px;
+}
+button{
+  padding:10px 15px;
+  border:none;
+  background:#2f3e46;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:10px;
+}
+h2,h3{margin:10px 0;}
+p{margin:5px 0;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Touristen Infos – Lokale Gewerbe</h1>
+<p>QR Code scannen, um Infos zu erhalten</p>
+</header>
+
+<div class="container" id="home"></div>
+<div class="container" id="info" style="display:none;"></div>
+
+<script>
+// ⭐ Gewerbe Infos
+const infos = {
+  langi: {
+    name:"Langi Schuehbändel",
+    text:`<p>Das Fachgeschäft <b>Langi Schuehbändel</b> bietet hochwertige Wanderschuhe, bequeme Alltagsschuhe und persönliche Beratung. Besonders beliebt sind die regionalen Marken und der Reparaturservice.</p>`
+  },
+  drogerie: {
+    name:"Drogerie Schweizer",
+    text:`<p>Die <b>Drogerie Schweizer</b> bietet Naturkosmetik, Pflegeprodukte und lokale Spezialitäten. Ideal für Reisende, die Schweizer Qualität erleben möchten.</p>`
+  },
+  dorfladen: {
+    name:"Dorfladen",
+    text:`<p>Der <b>Dorfladen</b> verkauft frische regionale Lebensmittel, hausgemachte Marmeladen und Bio-Eier. Perfekt für Touristen, die regionale Produkte probieren wollen.</p>`
+  },
+  ilsugo: {
+    name:"Il Sugo del Diavolo",
+    text:`<p>Das Restaurant <b>Il Sugo del Diavolo</b> serviert italienische Spezialitäten, hausgemachte Pasta und würzige Saucen. Besonders beliebt sind die frischen Panini und hausgemachten Saucen.</p>`
+  }
+};
+
+// Reihenfolge der Gewerbe
+const shops = ["langi","drogerie","dorfladen","ilsugo"];
+
+// ⭐ Base URL – nach Upload auf Vercel/Netlify diese URL ersetzen!
+let baseURL = "https://YOUR-ONLINE-URL/tourismus-online.html";
+// <-- ERSETZE YOUR-ONLINE-URL durch die URL, die Vercel oder Netlify dir gibt
+
+// ⭐ Startseite rendern
+function renderHome(){
+  let html = "";
+  shops.forEach(id=>{
+    const data = infos[id];
+    const qrURL = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" 
+      + encodeURIComponent(baseURL + "#" + id);
+    html += `
+    <div class="card">
+      <h3>${data.name}</h3>
+      <p>QR Code scannen für Infos</p>
+      <img src="${qrURL}" alt="QR Code ${data.name}">
+    </div>`;
+  });
+  document.getElementById("home").innerHTML = html;
+}
+
+// ⭐ Info Seite anzeigen
+function showInfo(id){
+  const data = infos[id];
+  document.getElementById("home").style.display = "none";
+  document.getElementById("info").style.display = "block";
+  document.getElementById("info").innerHTML = `
+    <div class="card">
+      <h2>${data.name}</h2>
+      ${data.text}
+      <button onclick="back()">⬅ Zurück</button>
+    </div>`;
+}
+
+function back(){
+  document.getElementById("info").style.display = "none";
+  document.getElementById("home").style.display = "block";
+}
+
+// ⭐ Automatische Anzeige bei QR Scan
+window.onload = ()=>{
+  renderHome();
+  const hash = window.location.hash.replace("#","");
+  if(infos[hash]) showInfo(hash);
+};
+</script>
+
+</body>
+</html>
+
+
